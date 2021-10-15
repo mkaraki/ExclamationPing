@@ -52,8 +52,8 @@ namespace ExclamationPing
                 }
             }
 
-            Console.WriteLine("Type excape sequence to abort.");
-            Console.WriteLine($"Sending {count}, {bytelen}-byte ICMP Echos to {addr}, timeout is {timeout} ms: ");
+            Console.WriteLine("Type escape sequence to abort.");
+            Console.WriteLine($"Sending {count}, {bytelen}-byte ICMP Echos to {addr}, timeout is {timeout} ms:");
 
             Console.CancelKeyPress += Console_CancelKeyPress;
 
