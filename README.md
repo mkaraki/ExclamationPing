@@ -5,7 +5,7 @@
 $ eping <IP/host> [timeout <seconds>] [size <byte>] [repeat <count>]
 ```
 
-### Use ms `for` timeout
+### Use `ms` for timeout
 
 Use `timeout-in-ms <ms>` option.
 
