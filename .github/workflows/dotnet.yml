@@ -29,11 +29,11 @@ jobs:
       with:
         dotnet-version: 6.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore ExclamationPing/ExclamationPing.csproj -r ${{ matrix.rid }}
     - name: Build
-      run: dotnet build --no-restore -r ${{ matrix.rid }}
+      run: dotnet build ExclamationPing/ExclamationPing.csproj --no-restore -r ${{ matrix.rid }}
     - name: Publish
-      run: dotnet publish -o eping --no-build -r ${{ matrix.rid }}
+      run: dotnet publish ExclamationPing/ExclamationPing.csproj -o eping --no-build -r ${{ matrix.rid }}
     - uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.rid }}
