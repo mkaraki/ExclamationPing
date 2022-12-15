@@ -9,6 +9,7 @@
 	<PublishReadyToRun>true</PublishReadyToRun>
 	<TargetName>eping</TargetName>
 	<AssemblyName>eping</AssemblyName>
+	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
 </Project>
