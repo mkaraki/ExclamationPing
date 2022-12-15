@@ -19,6 +19,7 @@ namespace ExclamationPing
             if (args.Length < 1)
             {
                 Console.WriteLine("% Bad IP address");
+                Environment.Exit(1);
                 return;
             }
 
@@ -76,6 +77,7 @@ namespace ExclamationPing
                 {
                     Console.WriteLine();
                     Console.WriteLine($"% Unrecognized host or address.");
+                    Environment.Exit(2);
                     return;
                 }
 
@@ -101,6 +103,7 @@ namespace ExclamationPing
                 catch (Exception ex)
                 {
                     Console.WriteLine("% " + ex.Message);
+                    Environment.Exit(3);
                     return;
                 }
 
