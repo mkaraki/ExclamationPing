@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 namespace ExclamationPing
 {
     internal class Program
     {
         
-        private static List<int> res = new List<int>();
+        private static readonly List<int> res = new();
 
         private static int ProceededCount = 0;
 
@@ -35,9 +37,14 @@ namespace ExclamationPing
                 
                 switch (optn)
                 {
-                    case "timeout":
+                    case "timeout-in-ms":
                         if (!isint) continue;
                         timeout = intdata;
+                        break;
+
+                    case "timeout":
+                        if (!isint) continue;
+                        timeout = intdata * 1000;
                         break;
 
                     case "repeat":
@@ -52,8 +59,33 @@ namespace ExclamationPing
                 }
             }
 
+            if (!IPAddress.TryParse(addr, out var ipaddrobj))
+            {
+                if (Uri.CheckHostName(addr) == UriHostNameType.Unknown)
+                {
+                    Console.WriteLine($"% Unrecognized host or address.");
+                }
+                Console.Write($"Translating \"{addr}\"...");
+
+                IPHostEntry host;
+                try
+                {
+                    host = Dns.GetHostEntry(addr);
+                }
+                catch (SocketException)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine($"% Unrecognized host or address.");
+                    return;
+                }
+
+                Console.WriteLine(" [OK]");
+
+                addr = host.AddressList.First().ToString();
+            }
+
             Console.WriteLine("Type escape sequence to abort.");
-            Console.WriteLine($"Sending {count}, {bytelen}-byte ICMP Echos to {addr}, timeout is {timeout} ms:");
+            Console.WriteLine($"Sending {count}, {bytelen}-byte ICMP Echos to {addr}, timeout is {timeout / 1000f} seconds:");
 
             Console.CancelKeyPress += Console_CancelKeyPress;
 
@@ -61,7 +93,17 @@ namespace ExclamationPing
             Ping sender = new Ping();
             for (int i = 0; i < count; i++)
             {
-                PingReply reply = sender.Send(addr, timeout, sendbyte);
+                PingReply reply;
+                try
+                {
+                    reply = sender.Send(addr, timeout, sendbyte);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("% " + ex.Message);
+                    return;
+                }
+
                 switch (reply.Status)
                 {
                     case IPStatus.Success:
@@ -94,7 +136,11 @@ namespace ExclamationPing
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             Console.WriteLine();
-            Console.WriteLine($"Success rate is {res.Count * 100 / ProceededCount} percent ({res.Count}/{ProceededCount}), round-trip min/avg/max = {res.Min()}/{(int)res.Average()}/{res.Max()} ms");
+            Console.Write($"Success rate is {res.Count * 100 / ProceededCount} percent ({res.Count}/{ProceededCount})");
+            if (res.Count > 0)
+                Console.Write($", round-trip min/avg/max = {res.Min()}/{(int)res.Average()}/{res.Max()} ms");
+
+            Console.WriteLine();
         }
     }
 }
