@@ -10,6 +10,7 @@
 	<TargetName>eping</TargetName>
 	<AssemblyName>eping</AssemblyName>
 	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	<PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
 
 </Project>
