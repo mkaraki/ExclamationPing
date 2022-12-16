@@ -28,11 +28,14 @@ namespace ExclamationPing
             int bytelen = 32;
             int timeout = 2000;
             int count = 5;
+            bool no_fragment = false;
 
-            for (int i = 1; i + 1 < args.Length; i += 2)
+            for (int i = 1; i < args.Length; i += 2)
             {
                 string optn = args[i];
-                string data = args[i + 1];
+                string data = null;
+                if (i + 1 < args.Length)
+                    data = args[i + 1];
 
                 bool isint = int.TryParse(data, out int intdata);
                 
@@ -56,6 +59,11 @@ namespace ExclamationPing
                     case "size":
                         if (!isint) continue;
                         bytelen = intdata;
+                        break;
+
+                    case "df-bit":
+                        i--;
+                        no_fragment = true;
                         break;
                 }
             }
@@ -93,12 +101,19 @@ namespace ExclamationPing
 
             byte[] sendbyte = new byte[bytelen];
             Ping sender = new Ping();
+            PingOptions options = new PingOptions() {
+                DontFragment = no_fragment,
+            };
+
+            if (no_fragment)
+                Console.WriteLine("Packet sent with the DF bit set");
+
             for (int i = 0; i < count; i++)
             {
                 PingReply reply;
                 try
                 {
-                    reply = sender.Send(addr, timeout, sendbyte);
+                    reply = sender.Send(addr, timeout, sendbyte, options);
                 }
                 catch (Exception ex)
                 {
@@ -128,6 +143,14 @@ namespace ExclamationPing
 
                     case IPStatus.TtlExpired:
                         Console.Write('&');
+                        break;
+
+                    case IPStatus.SourceQuench:
+                        Console.Write('Q');
+                        break;
+
+                    case IPStatus.PacketTooBig:
+                        Console.Write('M');
                         break;
                 }
                 ProceededCount++;

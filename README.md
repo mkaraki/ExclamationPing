@@ -2,7 +2,7 @@
 
 ## Usage
 ```shell
-$ eping <IP/host> [timeout <seconds>] [size <byte>] [repeat <count>]
+$ eping <IP/host> [timeout <seconds>] [size <byte>] [repeat <count>] [df-bit]
 ```
 
 ### Use `ms` for timeout
